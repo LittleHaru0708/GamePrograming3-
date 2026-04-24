@@ -5,25 +5,28 @@ public class Player : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpSpeed;
+    [SerializeField] Transform groundCheck;
+    [SerializeField] float groundCheckDistance = 0.1f;
+    [SerializeField] LayerMask groundLayer;
 
     PlayerInput playerInput;
     Rigidbody2D rb;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         var move = playerInput.actions["Move"].ReadValue<Vector2>();
 
         rb.linearVelocityX = move.x * speed;
 
-        if (playerInput.actions["Jump"].WasPressedThisFrame())
+        bool isGrounded = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, groundLayer);
+
+        if (playerInput.actions["Jump"].WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpSpeed;
         }
